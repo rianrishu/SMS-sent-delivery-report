@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText phoneNumberEditText;
     private EditText messageEditText;
     private Button sendButton;
-    public static final String SMS_SENT_ACTION = "com.andriodgifts.gift.SMS_SENT_ACTION";
-    public static final String SMS_DELIVERED_ACTION = "com.andriodgifts.gift.SMS_DELIVERED_ACTION";
+    public static final String SMS_SENT_ACTION = "com.example.sent_sms_identification.SMS_SENT_ACTION";
+    public static final String SMS_DELIVERED_ACTION = "com.example.sent_sms_identification.SMS_DELIVERED_ACTION";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,27 +36,24 @@ public class MainActivity extends AppCompatActivity {
         messageEditText = findViewById(R.id.message_edit_text);
         sendButton = findViewById(R.id.send_button);
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String phoneNumber = phoneNumberEditText.getText().toString().trim();
-                String message = messageEditText.getText().toString().trim();
+        sendButton.setOnClickListener(v -> {
+            String phoneNumber = phoneNumberEditText.getText().toString().trim();
+            String message = messageEditText.getText().toString().trim();
 
-                if (phoneNumber.isEmpty() || message.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Please enter phone number and message", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
-                            && checkSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
-                        sendSMS(phoneNumber, message);
-                    } else {
-                        requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PERMISSION_REQUEST_CODE);
-                    }
-                }
-
+            if (phoneNumber.isEmpty() || message.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Please enter phone number and message", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                    sendSMS(phoneNumber, message);
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PERMISSION_REQUEST_CODE);
+                }
+            }
+
         });
 
         registerReceiver(new BroadcastReceiver() {
