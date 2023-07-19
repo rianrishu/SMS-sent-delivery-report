@@ -9,9 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,6 +91,22 @@ public class MainActivity extends AppCompatActivity {
                 PendingIntent.getBroadcast(this, 0, new Intent(SMS_SENT_ACTION), PendingIntent.FLAG_IMMUTABLE),
                 PendingIntent.getBroadcast(this, 0, new Intent(SMS_DELIVERED_ACTION), PendingIntent.FLAG_IMMUTABLE));
         Toast.makeText(this, "Message sent triggered", Toast.LENGTH_SHORT).show();
+        String selection = Telephony.Sms.ADDRESS + " = ? AND " + Telephony.Sms.BODY + " = ?";
+        String[] selectionArgs = {phoneNumber, message};
+        Cursor cursor = getContentResolver().query(Telephony.Sms.CONTENT_URI, null, selection, selectionArgs, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String address = cursor.getString(cursor.getColumnIndex(Telephony.Sms.ADDRESS));
+                String body = cursor.getString(cursor.getColumnIndex(Telephony.Sms.BODY));
+                int status = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.STATUS));
+
+                Log.d("MyApp", "Address: " + address);
+                Log.d("MyApp", "Body: " + body);
+                Log.d("MyApp", "Status: " + status);
+            }
+            cursor.close();
+        }
     }
 
     @Override
